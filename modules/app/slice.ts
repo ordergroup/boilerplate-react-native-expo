@@ -5,8 +5,10 @@ const initialState: AppState = {
   themeMode: 'light',
 };
 
+export const APP_REDUCER_NAME = 'app';
+
 const appSlice = createSlice({
-  name: 'app',
+  name: APP_REDUCER_NAME,
   initialState,
   reducers: {
     setThemeMode: (state, action: PayloadAction<AppState['themeMode']>) => {
