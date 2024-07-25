@@ -4,6 +4,7 @@ module.exports = {
   bracketSpacing: true,
   singleQuote: true,
   trailingComma: 'all',
+  plugins: ['@trivago/prettier-plugin-sort-imports'],
   importOrder: [
     '^react$',
     '^react-native$',

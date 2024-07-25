@@ -1,13 +1,12 @@
 import type { PropsWithChildren, ReactElement } from 'react';
 import { StyleSheet, useColorScheme } from 'react-native';
+import { ThemedView } from '@/components/ThemedView';
 import Animated, {
   interpolate,
   useAnimatedRef,
   useAnimatedStyle,
   useScrollViewOffset,
 } from 'react-native-reanimated';
-
-import { ThemedView } from '@/components/ThemedView';
 
 const HEADER_HEIGHT = 250;
 
