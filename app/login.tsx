@@ -1,9 +1,11 @@
 import { Text, View } from 'react-native';
 
-export default function LoginScreen() {
+const LoginScreen = () => {
   return (
     <View>
       <Text> LoginScreen </Text>
     </View>
   );
-}
+};
+
+export default LoginScreen;

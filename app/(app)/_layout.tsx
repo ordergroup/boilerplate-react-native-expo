@@ -1,7 +1,7 @@
 import { SCREENS } from '@/modules/app/constants';
 import { Redirect, Stack } from 'expo-router';
 
-export default function AppLayout() {
+const AppLayout = () => {
   const isAuthorized = true;
 
   if (!isAuthorized) {
@@ -10,4 +10,6 @@ export default function AppLayout() {
 
   // This layout can be deferred because it's not the root layout.
   return <Stack />;
-}
+};
+
+export default AppLayout;

@@ -1,11 +1,21 @@
 import React from 'react';
-import { useColorScheme } from 'react-native';
+import { appSelectors } from '@/modules/app/selectors';
+import { store, useAppSelector } from '@/modules/app/store';
 import { darkTheme, lightTheme } from '@/modules/app/theme';
 import { Stack } from 'expo-router';
 import { PaperProvider } from 'react-native-paper';
+import { Provider } from 'react-redux';
 
-export default function RootLayout() {
-  const isDarkMode = useColorScheme() === 'dark';
+const RootLayout = () => {
+  return (
+    <Provider store={store}>
+      <AppWithStore />
+    </Provider>
+  );
+};
+
+const AppWithStore = () => {
+  const isDarkMode = useAppSelector(appSelectors.getThemeMode) === 'dark';
 
   return (
     <PaperProvider theme={isDarkMode ? darkTheme : lightTheme}>
@@ -15,4 +25,6 @@ export default function RootLayout() {
       </Stack>
     </PaperProvider>
   );
-}
+};
+
+export default RootLayout;
