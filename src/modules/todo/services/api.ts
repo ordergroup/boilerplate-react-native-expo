@@ -3,8 +3,8 @@ import { baseApi } from '@/modules/app/services/api';
 import {
   processGetTodosResponse,
   processTodoResponse,
-} from '@/modules/dashboard/services/api.data';
-import { TodoRequest } from '@/modules/dashboard/services/api.types';
+} from '@/modules/todo/services/api.data';
+import { TodoRequest } from '@/modules/todo/services/api.types';
 
 export const todosApi = baseApi
   .enhanceEndpoints({ addTagTypes: ['Todo'] })
@@ -20,9 +20,13 @@ export const todosApi = baseApi
         transformResponse: processTodoResponse,
       }),
       getTodos: builder.query<Todo[], void>({
-        query: () => 'todos',
+        query: () => ({
+          url: 'todos',
+          method: 'GET',
+        }),
         providesTags: ['Todo'],
         transformResponse: processGetTodosResponse,
+        keepUnusedDataFor: 0, // Disable caching
       }),
       updateTodo: builder.mutation<Todo, TodoRequest>({
         query: query => ({

@@ -1,7 +1,4 @@
-import {
-  TodoRequest,
-  TodoResponse,
-} from '@/modules/dashboard/services/api.types';
+import { TodoRequest, TodoResponse } from '@/modules/todo/services/api.types';
 import { Todo } from '../../../models/Todo';
 
 export const processTodoResponse = (response: TodoResponse): Todo => ({

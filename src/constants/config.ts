@@ -1,5 +1,6 @@
-import RNConfig from 'react-native-config';
-
 export const CONFIG = {
-  apiUrl: RNConfig.API_URL,
+  apiUrl: process.env.EXPO_PUBLIC_API_URL,
+  enableMocks: ['true', 'True'].includes(
+    process.env.EXPO_PUBLIC_ENABLE_MOCKS || 'false',
+  ),
 };

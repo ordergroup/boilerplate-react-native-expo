@@ -3,7 +3,7 @@ import { appActions } from '@/modules/app/actions';
 import { appSelectors } from '@/modules/app/selectors';
 import { AppState } from '@/modules/app/slice.types';
 import { useAppDispatch, useAppSelector } from '@/modules/app/store';
-import { useGetTodosQuery } from '@/modules/dashboard/services/api';
+import { useGetTodosQuery } from '@/modules/todo/services/api';
 import { Button, Divider, Text } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
