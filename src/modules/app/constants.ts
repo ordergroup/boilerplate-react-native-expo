@@ -1,7 +1,7 @@
 export const SCREENS = {
   // auth screens
-  login: 'login',
+  login: '/login',
 
   // app screens
-  dashboard: 'dashboard',
-};
+  dashboard: '/dashboard',
+} as const;
