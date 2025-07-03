@@ -4,10 +4,15 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
 
 ## Get started
 
+This project uses Yarn 1 (Classic). If you have higher versions run the script:
+```bash
+bash ./scripts/setup-yarn.sh
+```
+
 1. Install dependencies
 
    ```bash
-   npm install
+   yarn install
    ```
 
 2. Start the app
