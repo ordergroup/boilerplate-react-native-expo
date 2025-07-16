@@ -4,10 +4,15 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
 
 ## Get started
 
+This project uses Yarn 1 (Classic). If you have higher versions run the script:
+```bash
+bash ./scripts/setup-yarn.sh
+```
+
 1. Install dependencies
 
    ```bash
-   npm install
+   yarn install
    ```
 
 2. Start the app
@@ -48,3 +53,8 @@ Join our community of developers creating universal apps.
 
 - [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
 - [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+
+## Requirements
+Tested with below setup:
+- Node@v22.17.0
+- Cocoapods@v1.16.2
