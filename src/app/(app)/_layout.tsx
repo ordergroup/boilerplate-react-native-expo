@@ -3,7 +3,7 @@ import { Redirect, Stack } from 'expo-router';
 
 const AppLayout = () => {
   const isAuthorized = true;
-  
+
   if (!isAuthorized) {
     return <Redirect href={SCREENS.login} />;
   }
