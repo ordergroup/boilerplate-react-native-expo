@@ -1,23 +1,23 @@
-import { Todo } from '@/models/Todo';
 import { baseApi } from '@/modules/app/services/api';
+import { Todo } from '@/modules/todo/models/Todo';
+import { toTodoRequestDto } from '@/modules/todo/services/api.requests.mappers';
 import {
-  processGetTodosResponse,
-  processTodoResponse,
-} from '@/modules/todo/services/api.data';
-import { TodoRequest } from '@/modules/todo/services/api.types';
+  toTodo,
+  toTodoList,
+} from '@/modules/todo/services/api.responses.mapper';
 
 export const todosApi = baseApi
   .enhanceEndpoints({ addTagTypes: ['Todo'] })
   .injectEndpoints({
     endpoints: builder => ({
-      createTodo: builder.mutation<Todo, TodoRequest>({
-        query: query => ({
+      createTodo: builder.mutation<Todo, Todo>({
+        query: todo => ({
           url: 'todos',
           method: 'POST',
-          body: query,
+          body: toTodoRequestDto(todo),
         }),
         invalidatesTags: ['Todo'],
-        transformResponse: processTodoResponse,
+        transformResponse: toTodo,
       }),
       getTodos: builder.query<Todo[], void>({
         query: () => ({
@@ -25,17 +25,17 @@ export const todosApi = baseApi
           method: 'GET',
         }),
         providesTags: ['Todo'],
-        transformResponse: processGetTodosResponse,
+        transformResponse: toTodoList,
         keepUnusedDataFor: 0, // Disable caching
       }),
-      updateTodo: builder.mutation<Todo, TodoRequest>({
-        query: query => ({
+      updateTodo: builder.mutation<Todo, Todo>({
+        query: todo => ({
           url: 'todos',
           method: 'PUT',
-          body: query,
+          body: toTodoRequestDto(todo),
         }),
         invalidatesTags: ['Todo'],
-        transformResponse: processTodoResponse,
+        transformResponse: toTodo,
       }),
       deleteTodo: builder.mutation<string, number>({
         query: todoId => ({
