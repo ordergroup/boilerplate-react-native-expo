@@ -1,9 +1,5 @@
-import {
-  CustomColors,
-  darkColors,
-  lightColors,
-} from '@/modules/app/theme/colors';
-import { fonts } from '@/modules/app/theme/fonts';
+import { CustomColors, darkColors, lightColors } from '@/theme/colors';
+import { fonts } from '@/theme/fonts';
 import { MD3DarkTheme, MD3LightTheme } from 'react-native-paper';
 import { ThemeProp } from 'react-native-paper/lib/typescript/types';
 
