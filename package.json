@@ -67,5 +67,8 @@
     "react-test-renderer": "19.2.3",
     "typescript": "~5.9.3"
   },
+  "resolutions": {
+    "tar": "^7.5.3"
+  },
   "private": true
 }
