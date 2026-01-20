@@ -1,0 +1,1183 @@
+# Frontend Development Rules - React Native / TypeScript / Expo
+
+---
+
+## 1. Core Principles
+
+### 1.1 Do Exactly What Is Requested
+- **ALWAYS** do exactly what the user asks for - nothing more, nothing less
+- **NEVER** make additional changes unless explicitly requested
+- **NEVER** remove functionality when asked to clean up code (like console.logs)
+- **NEVER** refactor code unless specifically asked to refactor
+- **NEVER** fix or improve anything when user only asks a question
+- **NEVER** assume user wants changes when they just ask "why" or "what"
+- **NEVER** change widths, colors, or styling unless specifically requested
+- **NEVER** add extra features or improvements unless explicitly asked
+- **ALWAYS** ask for clarification if the request is unclear
+- **ALWAYS** provide a list of potential improvements at the end of each response
+- **ALWAYS** wait for user approval before making any changes beyond the exact request
+
+### 1.2 Language Requirements
+- **ALWAYS** use Polish language for all console.log messages
+- **ALWAYS** use Polish language for all user-facing error messages and alerts
+
+### 1.3 Code Style
+- Follow Google TypeScript Style Guide strictly
+- Apply YAGNI principle - don't build for hypothetical future needs
+- Separate logic from display completely
+- Organize code in logical, modular structure
+
+---
+
+## 2. TypeScript Rules
+
+### 2.1 Types and Interfaces
+- **Prefer `interface` over `type`** for object shapes
+- **NEVER use `any`** - prefer `unknown` when type is uncertain
+
+```typescript
+// ✅ GOOD
+interface User {
+  id: string;
+  name: string;
+}
+
+function processData(data: unknown): void {
+  // Handle unknown type safely
+}
+
+// ❌ BAD
+type User = {
+  id: string;
+  name: string;
+}
+
+function processData(data: any): void {
+  // Avoid any
+}
+```
+
+### 2.2 Naming Conventions
+- **UpperCamelCase:** class / interface / type / enum / decorator / type parameters / component functions in TSX / JSXElement type parameter
+- **lowerCamelCase:** variable / parameter / function / method / property / module alias
+- **CONSTANT_CASE:** global constant values, including enum values
+- **Treat abbreviations like acronyms as whole words:** use `loadHttpUrl`, NOT `loadHTTPURL`
+- **NEVER** hardcode enum values as strings - **ALWAYS** use enum constants (e.g., `Sex.MALE` instead of `"MALE"`)
+
+```typescript
+// ✅ GOOD
+interface UserProfile {}
+class DataService {}
+const MAX_RETRY_COUNT = 3;
+function loadHttpUrl() {}
+
+// ❌ BAD
+interface userProfile {}
+class dataService {}
+const maxRetryCount = 3;
+function loadHTTPURL() {}
+```
+
+### 2.3 File Naming Conventions
+Use file name quantifiers with extensions:
+- `api.ts` - API service
+- `api.data.ts` - API data processing
+- `api.types.ts` - API type definitions
+- `api.data.objMapper.ts` - Object mapping used by api.data.ts
+
+**Avoid Name Repetition:**
+- If directory is `services/`, file should be `api.ts`, NOT `apiService.ts`
+- If type is `Book`, field should be `title`, NOT `bookTitle`
+
+---
+
+## 3. JavaScript/TypeScript Best Practices
+
+### 3.1 Variable Declarations
+- **Always use `const` or `let`** - **NEVER use `var`**
+- **Use `const` by default**, unless a variable needs to be reassigned
+
+```typescript
+// ✅ GOOD
+const userName = 'John';
+let counter = 0;
+counter++;
+
+// ❌ BAD
+var userName = 'John';
+```
+
+### 3.2 Functions
+- **Prefer function declarations** for named functions
+- **Prefer arrow functions** as callbacks
+- **Prefer explicit returns** in arrow functions over implicit for clarity
+- **Avoid multiple responsibilities** in a single function
+- **Use rest parameters** instead of accessing `arguments`
+- **Never name a local variable or parameter `arguments`** (shadows built-in name)
+
+```typescript
+// ✅ GOOD - Named function
+function calculateTotal(items: Item[]): number {
+  return items.reduce((sum, item) => sum + item.price, 0);
+}
+
+// ✅ GOOD - Arrow function as callback
+items.map((item) => {
+  return processItem(item);
+});
+
+// ✅ GOOD - Rest parameter
+function sum(...numbers: number[]): number {
+  return numbers.reduce((a, b) => a + b, 0);
+}
+
+// ❌ BAD - Implicit return when logic is complex
+items.map(item => processItem(item) && item.active ? item.price : 0);
+
+// ❌ BAD - Using arguments
+function sum() {
+  return Array.from(arguments).reduce((a, b) => a + b, 0);
+}
+```
+
+### 3.3 Operators and Comparisons
+- **Always use `===` and `!==`** - never `==` or `!=`
+- **Use optional chaining (`?.`)** instead of manual checks
+
+```typescript
+// ✅ GOOD
+if (value === null) {}
+const name = user?.profile?.name;
+
+// ❌ BAD
+if (value == null) {}
+const name = user && user.profile && user.profile.name;
+```
+
+### 3.4 Control Flow
+- **Always use braced blocks**, even if the body contains only a single statement
+- **Single-line if statements may elide the block**
+- **All switch statements must contain a default statement group** (even if empty), and it must be last
+
+```typescript
+// ✅ GOOD
+if (condition) {
+  doSomething();
+}
+
+// ✅ GOOD - Single line
+if (condition) doSomething();
+
+// ✅ GOOD - Switch with default
+switch (value) {
+  case 'a':
+    handleA();
+    break;
+  case 'b':
+    handleB();
+    break;
+  default:
+    // No action needed
+}
+
+// ❌ BAD - Missing braces
+if (condition)
+  doSomething();
+  doSomethingElse(); // Bug: not part of if!
+```
+
+### 3.5 Iteration
+- **Prefer `for (... of someArr)`** to iterate over arrays
+- **`Array.prototype.forEach`** and vanilla for loops are also allowed
+- **Avoid `for...in`** for arrays
+
+```typescript
+// ✅ GOOD
+for (const item of items) {
+  process(item);
+}
+
+items.forEach((item) => {
+  process(item);
+});
+
+// ❌ BAD - for...in on array
+for (const index in items) {
+  process(items[index]);
+}
+```
+
+### 3.6 Ternary Operators
+- **Avoid deeply nested ternary operators**
+
+```typescript
+// ✅ GOOD
+const status = isActive ? 'active' : 'inactive';
+
+// ❌ BAD
+const message = isActive ? isVerified ? isPremium ? 'Premium Active' : 'Active' : 'Not Verified' : 'Inactive';
+```
+
+### 3.7 Exports
+- **Prefer named exports** over default exports
+- **Exception:** Expo Router route files require default exports
+
+```typescript
+// ✅ GOOD
+export const UserService = {};
+export function calculateTotal() {}
+
+// ❌ BAD (avoid when possible)
+export default UserService;
+```
+
+### 3.8 Configuration
+- **Use environment variables** for configuration, not hardcoded values
+
+```typescript
+// ✅ GOOD
+const apiUrl = process.env.REACT_APP_API_URL;
+
+// ❌ BAD
+const apiUrl = 'https://api.example.com';
+```
+
+### 3.9 Comments
+- **Use `//` line comments** for implementation comments
+- Document non-obvious code that needs explanation
+
+```typescript
+// ✅ GOOD
+// Calculate the total price including tax
+const totalPrice = basePrice * (1 + taxRate);
+```
+
+---
+
+## 4. React / React Native Rules
+
+### 4.1 Component Guidelines
+- **Use function components** - never class components
+- **Use destructuring** for props and state
+- **Separate logic from view** - extract hooks and helpers out of components
+- **Extract repeated logic** into reusable helpers or hooks
+- **If React Compiler is enabled, don't use `useCallback` and `useMemo`**
+- Components should contain MINIMAL logic
+- NEVER access Redux store directly from components
+
+```typescript
+// ✅ GOOD - Function component with destructuring
+export const UserProfile = ({ userId, onUpdate }: UserProfileProps) => {
+  const { user, loading } = useUser(userId);
+
+  return (
+    <div>
+      {loading ? <Spinner /> : <UserDetails user={user} />}
+    </div>
+  );
+};
+
+// ❌ BAD - Class component
+class UserProfile extends React.Component {
+  render() {
+    return <div>{this.props.user.name}</div>;
+  }
+}
+
+// ❌ BAD - No destructuring
+export const UserProfile = (props: UserProfileProps) => {
+  return <div>{props.user.name}</div>;
+};
+```
+
+### 4.2 Component Naming and Props
+- Component names should be **abstract and reusable**, NOT tied to specific domain
+- Props should be **generic and separated from business logic**
+
+```typescript
+// ❌ BAD - Domain-specific
+export const ClientListItem = ({ title, hasContracts, id }: ClientListItemProps) => (
+  <TouchableOpacity
+    onPress={() => navigator.push(Screen.CLIENT_DETAILS, {id})}
+    disabled={!hasContracts}
+  >
+    {title}
+  </TouchableOpacity>
+)
+
+// ✅ GOOD - Generic and reusable
+export const DefaultListItem = ({ title, enabled, onPress }: DefaultListItemProps) => (
+  <TouchableOpacity onPress={onPress} disabled={!enabled}>
+    {title}
+  </TouchableOpacity>
+)
+```
+
+### 4.3 Component Files Organization
+- Components must have `index.ts` that exports public interfaces
+- Avoid large `index.ts` files exporting many components (performance)
+- Use naming: `ComponentName.tsx`, `ComponentName.styles.ts`, `ComponentName.controller.ts`
+- Place components where they originate, not where they're used
+- Components can be in collective directory (e.g., `buttons/`) or own directory (e.g., `PrimaryButton/`)
+- All files within component directory must relate to component name
+
+---
+
+## 5. Styling Rules (React Native)
+
+### 5.1 Core Styling Principles
+- **NEVER use inline styles** - absolutely no exceptions
+- **ALWAYS use `StyleSheet.create()`** for component styles
+- **ALWAYS create `createStyles` function** that accepts theme parameter with `AppTheme` type
+- **Pattern:** `const createStyles = (theme: AppTheme) => StyleSheet.create({...})`
+
+### 5.2 Theme Usage
+- **ALWAYS import `AppTheme` type:** `import { AppTheme } from '@/theme'`
+- **ALWAYS cast useTheme():** `const theme = useTheme() as AppTheme`
+- **ALWAYS call** `const styles = createStyles(theme)` in component
+- **NEVER use `any` type** - use `AppTheme` for theme parameter
+
+### 5.3 Colors
+- **NEVER hardcode colors** (hex, rgb, rgba) - ALWAYS use `theme.colors`
+- **NEVER use colors like** `#1976d2`, `#ffffff`, etc. - use theme equivalents
+- Available: `theme.colors.primary`, `secondary`, `background`, `surface`, `error`, `onPrimary`, `onSecondary`, `onBackground`, `onSurface`
+
+### 5.4 Typography
+- **NEVER hardcode typography** (fontSize, fontWeight, lineHeight) - ALWAYS use `theme.fonts`
+- **ALWAYS use spread operator** `...theme.fonts.bodyLarge` in StyleSheet for fonts
+- Available variants:
+  - Display: `displayLarge`, `displayMedium`, `displaySmall`
+  - Headline: `headlineLarge`, `headlineMedium`, `headlineSmall`
+  - Title: `titleLarge`, `titleMedium`, `titleSmall`
+  - Body: `bodyLarge`, `bodyMedium`, `bodySmall`
+  - Label: `labelLarge`, `labelMedium`, `labelSmall`
+
+### 5.5 Spacing
+- **NEVER hardcode spacing values** (padding, margin, gap) - ALWAYS use `theme.spacing`
+- **NEVER use hardcoded pixel values** like `padding: 16` - use `padding: theme.spacing.L`
+- Available values:
+  - `theme.spacing.XS` = 4px
+  - `theme.spacing.S` = 8px
+  - `theme.spacing.M` = 12px
+  - `theme.spacing.L` = 16px
+  - `theme.spacing.XL` = 20px
+  - `theme.spacing.XXL` = 24px
+
+### 5.6 Complete Styling Example
+
+```typescript
+// ✅ GOOD - Component with theme-based styles
+import { StyleSheet, View, Text } from 'react-native';
+import { useTheme } from 'react-native-paper';
+import { AppTheme } from '@/theme';
+
+const createStyles = (theme: AppTheme) => StyleSheet.create({
+  container: {
+    padding: theme.spacing.L,
+    borderRadius: 8,
+    backgroundColor: theme.colors.surface,
+  },
+  title: {
+    ...theme.fonts.titleMedium,
+    color: theme.colors.primary,
+    marginBottom: theme.spacing.S,
+  },
+});
+
+export const UserCard = () => {
+  const theme = useTheme() as AppTheme;
+  const styles = createStyles(theme);
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>Title</Text>
+    </View>
+  );
+};
+
+// ✅ GOOD - Separate styles file (UserCard.styles.ts)
+import { StyleSheet } from 'react-native';
+import { AppTheme } from '@/theme';
+
+export const createStyles = (theme: AppTheme) => StyleSheet.create({
+  container: {
+    padding: theme.spacing.XXL,
+    margin: theme.spacing.L,
+    gap: theme.spacing.S,
+    backgroundColor: theme.colors.surface,
+  },
+  header: {
+    paddingTop: theme.spacing.XL,
+    paddingBottom: theme.spacing.XXL,
+  },
+  title: {
+    ...theme.fonts.headlineMedium,
+    color: theme.colors.onSurface,
+  },
+});
+
+// ❌ BAD - Inline styles
+export const UserCard = () => {
+  return (
+    <View style={{ padding: 16 }}>
+      <Text>Title</Text>
+    </View>
+  );
+};
+
+// ❌ BAD - Hardcoded values in StyleSheet
+const styles = StyleSheet.create({
+  container: {
+    padding: 16,              // NEVER! Use theme.spacing.L
+    margin: 8,                // NEVER! Use theme.spacing.S
+    backgroundColor: '#1976d2', // NEVER! Use theme.colors.primary
+  },
+  title: {
+    fontSize: 18,             // NEVER! Use theme.fonts.titleMedium
+    fontWeight: 'bold',       // NEVER! Use theme.fonts.titleMedium
+  },
+});
+
+// ❌ BAD - Inline styles even with theme
+export const UserCard = () => {
+  const theme = useTheme();
+  return (
+    <View style={{ backgroundColor: theme.colors.surface }}>
+      <Text style={{ color: theme.colors.primary }}>Title</Text>
+    </View>
+  );
+};
+```
+
+---
+
+## 6. React Native Specific Rules
+
+### 6.1 Lists and Performance
+- **Use `FlatList` or `SectionList`** for lists with >10 items
+- **NEVER use `.map()`** for long lists (causes performance issues)
+- **Always provide `keyExtractor`** for FlatList
+- **Use `getItemLayout`** when items have fixed height
+
+```typescript
+// ✅ GOOD
+<FlatList
+  data={users}
+  keyExtractor={(item) => item.id}
+  renderItem={({ item }) => <UserCard user={item} />}
+  getItemLayout={(data, index) => ({
+    length: ITEM_HEIGHT,
+    offset: ITEM_HEIGHT * index,
+    index,
+  })}
+/>
+
+// ❌ BAD
+{users.map((user) => (
+  <UserCard key={user.id} user={user} />
+))}
+```
+
+### 6.2 Platform-Specific Code
+- **Use `Platform.OS`** for platform-specific logic
+- **Use `Platform.select()`** for platform-specific values
+- **Create separate `.ios.tsx` / `.android.tsx` files** for major differences
+
+```typescript
+// ✅ GOOD - Platform-specific with theme
+import { Platform, StyleSheet } from 'react-native';
+import { useTheme } from 'react-native-paper';
+import { AppTheme } from '@/theme';
+
+const createStyles = (theme: AppTheme) => StyleSheet.create({
+  container: {
+    paddingTop: Platform.OS === 'ios' ? theme.spacing.XL : 0,
+    backgroundColor: theme.colors.surface,
+  },
+  text: {
+    ...theme.fonts.bodyMedium,
+    color: theme.colors.onSurface,
+    ...Platform.select({
+      ios: { letterSpacing: 0.5 },
+      android: { letterSpacing: 0.25 },
+    }),
+  },
+});
+```
+
+### 6.3 Touch Components
+- **Prefer `Pressable`** over `TouchableOpacity` for better control and feedback
+- **Use React Native Paper's `Button` and `IconButton`** for consistency
+- **Avoid nested touchable components**
+
+```typescript
+// ✅ GOOD
+import { Pressable } from 'react-native';
+
+<Pressable
+  onPress={handlePress}
+  style={({ pressed }) => [
+    styles.button,
+    pressed && styles.buttonPressed,
+  ]}
+>
+  <Text>Press me</Text>
+</Pressable>
+
+// ❌ BAD
+<TouchableOpacity onPress={handlePress}>
+  <View style={styles.button}>
+    <Text>Press me</Text>
+  </View>
+</TouchableOpacity>
+```
+
+---
+
+## 7. Expo Specific Rules
+
+### 7.1 Expo Router
+- **Follow file-based routing conventions** (`app/` directory structure)
+- **Use `_layout.tsx` files** for nested layouts and navigation structure
+- **Use dynamic routes** with `[id].tsx` naming pattern
+- **Use `(tabs)` and `(stack)` directory naming** for navigation types
+- **Export default component** from route files (exception to "no default exports" rule)
+
+```typescript
+// app/_layout.tsx - Root layout
+export default function RootLayout() {
+  return (
+    <Stack>
+      <Stack.Screen name="index" />
+      <Stack.Screen name="(tabs)" />
+    </Stack>
+  );
+}
+
+// app/(tabs)/_layout.tsx - Tabs layout
+export default function TabsLayout() {
+  return (
+    <Tabs>
+      <Tabs.Screen name="home" />
+      <Tabs.Screen name="profile" />
+    </Tabs>
+  );
+}
+
+// app/user/[id].tsx - Dynamic route
+import { useLocalSearchParams } from 'expo-router';
+
+export default function UserScreen() {
+  const { id } = useLocalSearchParams();
+  return <UserDetails userId={id} />;
+}
+```
+
+### 7.2 Navigation
+- **Use `useRouter()` hook** for programmatic navigation
+- **Use `Link` component** for declarative navigation
+- **Use typed routes** with generated route types
+
+```typescript
+// ✅ GOOD
+import { useRouter, Link } from 'expo-router';
+
+export const UserList = () => {
+  const router = useRouter();
+
+  return (
+    <>
+      <Link href="/settings">Go to Settings</Link>
+      <Button onPress={() => router.push('/user/123')}>
+        View User
+      </Button>
+    </>
+  );
+};
+```
+
+### 7.3 Environment Variables
+- **Use `expo-constants`** for accessing environment variables
+- **Never hardcode API URLs or keys**
+- **Use `app.config.ts` or `app.config.js`** for dynamic configuration
+
+```typescript
+// ✅ GOOD
+import Constants from 'expo-constants';
+
+const apiUrl = Constants.expoConfig?.extra?.apiUrl;
+
+// app.config.ts
+export default {
+  extra: {
+    apiUrl: process.env.API_URL,
+  },
+};
+```
+
+---
+
+## 8. Project Structure
+
+### 8.1 Root Structure
+```
+src/
+├── components/     # Reusable components (minimal logic, no store access)
+├── constants/      # Global constants, config with .env
+├── models/         # Global type definitions for domain models
+├── modules/        # Application modules
+├── styles/         # (optional) Global styles
+└── utils/          # (optional) Global utility functions and hooks
+```
+
+### 8.2 Module Structure
+```
+module/
+├── components/     # Module-specific components
+├── models/         # Module-specific models
+├── services/       # Services (e.g., api, notifications)
+├── actions.ts      # Redux actions
+├── selectors.ts    # Redux selectors (MANDATORY - never access state directly)
+└── slice.ts        # Redux Toolkit slice configuration
+```
+
+### 8.3 App Module
+Special module serving as application entry point containing:
+- Routing configuration
+- Axios configuration
+- Store configuration
+- Translation configuration
+- Inter-module communication elements
+
+Can contain shared elements, or these can be in root directories (`utils/`, `styles/`)
+
+---
+
+## 9. Models
+
+### 9.1 Definition
+- Models represent real-world objects (User, Contract, etc.)
+- Global models go in `models/` directory
+- Module-specific models go in `module/models/`
+- Files can contain multiple types but must follow logical grouping
+- Place types where they originate, not where they're used
+
+```typescript
+// models/user.ts
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+}
+
+// models/contract.ts
+export interface Contract {
+  id: string;
+  userId: string;
+  // Contract is independent model, NOT defined in User.ts
+}
+```
+
+---
+
+## 10. Redux State Management
+
+### 10.1 Slice Configuration
+- Slice name must reflect module purpose (visible in global state)
+- **Use meaningful action names describing state changes, NOT generic setters**
+- Changes to state ONLY through slice-generated actions
+
+```typescript
+// ✅ GOOD - Descriptive actions
+const clientSlice = createSlice({
+  name: 'client',
+  initialState,
+  reducers: {
+    loadClientList: (state) => {
+      state.loading = true;
+    },
+    clientListLoadingSuccess: (state, action) => {
+      state.loading = false;
+      state.clients = action.payload;
+    },
+    clientListLoadingError: (state, action) => {
+      state.loading = false;
+      state.error = action.payload;
+    }
+  }
+});
+
+// ❌ BAD - Generic setters
+const clientSlice = createSlice({
+  name: 'client',
+  initialState,
+  reducers: {
+    setLoading: (state, action) => {
+      state.loading = action.payload;
+    },
+    setClients: (state, action) => {
+      state.clients = action.payload;
+    },
+    setError: (state, action) => {
+      state.error = action.payload;
+    }
+  }
+});
+```
+
+### 10.2 Selectors
+- **Using selectors is MANDATORY**
+- **Access Redux state ONLY via selectors**
+- **Only reducers may refer directly to state shape**
+- Consider `reselect` package for computed selectors
+- Define selectors in `selectors.ts` file
+
+```typescript
+// ✅ GOOD - Using selectors
+// selectors.ts
+export const selectClients = (state: RootState) => state.client.clients;
+export const selectClientLoading = (state: RootState) => state.client.loading;
+
+// component.tsx
+const clients = useSelector(selectClients);
+const loading = useSelector(selectClientLoading);
+
+// ❌ BAD - Direct state access
+const clients = useSelector((state: RootState) => state.client.clients);
+```
+
+---
+
+## 11. API Communication with RTK Query
+
+### 11.1 Critical Principles
+1. **Every API response MUST be processed** - map to internal application models/objects
+2. **NEVER use `response.data` directly** in the application
+3. **Functions exposed from API should accept payload with suffix `Payload`**
+4. **Use `prepare[FunctionName]` functions** for request preparation
+5. **Use `process[FunctionName]Response` functions** for response processing
+
+### 11.2 Required Structure
+```
+services/
+├── api.ts                              # Main RTK Query API definition
+├── api.requests.params.ts              # Request params types
+├── api.requests.body.ts                # Request body types
+├── api.responses.ts                    # Response types
+├── api.requests.prepare.ts             # Payload → Request preparation
+└── api.responses.process.ts            # Response → Model processing
+```
+
+### 11.3 Naming Conventions
+
+**Payload Types:**
+- Functions exposed from API accept payload named with suffix `Payload`
+- Example: `getUserListPayload`, `createUserPayload`
+
+**Request Preparation Functions:**
+- For query parameters: `prepare[FunctionName]RequestParams`
+- For request bodies: `prepare[FunctionName]RequestBody`
+- If no payload, the payload type can be `void`
+
+**Response Processing Functions:**
+- Function name: `process[FunctionName]Response`
+- Takes `[FunctionName]Response` structure
+- Returns application domain object (model or simple type)
+- If response contains no data, return `null`
+
+### 11.4 Complete Example: Fetching User List
+
+```typescript
+// 1. Define domain model (models/user.ts)
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+}
+
+// 2. Define payload type (services/api.types.ts)
+export interface GetUserListPayload {
+  search?: string;
+  limit: number;
+  offset: number;
+}
+
+// 3. Define request params type (services/api.requests.params.ts)
+export interface GetUserListRequestParams {
+  q?: string;
+  limit: number;
+  offset: number;
+}
+
+// 4. Define response type (services/api.responses.ts)
+export interface GetUserListResponse {
+  items: Array<{
+    id: string;
+    username: string;
+    email_address: string;
+  }>;
+  total: number;
+}
+
+// 5. Create request preparation function (services/api.requests.prepare.ts)
+export const prepareGetUserListRequestParams = (
+  payload: GetUserListPayload
+): GetUserListRequestParams => ({
+  q: payload.search,
+  limit: payload.limit,
+  offset: payload.offset
+});
+
+// 6. Create response processing function (services/api.responses.process.ts)
+export const processGetUserListResponse = (
+  response: GetUserListResponse
+): User[] => {
+  return response.items.map(item => ({
+    id: item.id,
+    name: item.username,
+    email: item.email_address
+  }));
+};
+
+// 7. Define API query (services/api.ts)
+export const api = createApi({
+  baseQuery: fetchBaseQuery({ baseUrl: '/api' }),
+  endpoints: (builder) => ({
+    getUserList: builder.query<User[], GetUserListPayload>({
+      query: (payload) => ({
+        url: '/users',
+        params: prepareGetUserListRequestParams(payload)
+      }),
+      transformResponse: (response: GetUserListResponse) =>
+        processGetUserListResponse(response)
+    })
+  })
+});
+
+export const { useGetUserListQuery } = api;
+```
+
+### 11.5 Example: Mutation with Request Body
+
+```typescript
+// 1. Define payload
+export interface CreateUserPayload {
+  name: string;
+  email: string;
+}
+
+// 2. Define request body type
+export interface CreateUserRequestBody {
+  username: string;
+  email_address: string;
+}
+
+// 3. Define response type
+export interface CreateUserResponse {
+  id: string;
+  username: string;
+  email_address: string;
+}
+
+// 4. Prepare request body
+export const prepareCreateUserRequestBody = (
+  payload: CreateUserPayload
+): CreateUserRequestBody => ({
+  username: payload.name,
+  email_address: payload.email
+});
+
+// 5. Process response
+export const processCreateUserResponse = (
+  response: CreateUserResponse
+): User => ({
+  id: response.id,
+  name: response.username,
+  email: response.email_address
+});
+
+// 6. Define mutation
+export const api = createApi({
+  endpoints: (builder) => ({
+    createUser: builder.mutation<User, CreateUserPayload>({
+      query: (payload) => ({
+        url: '/users',
+        method: 'POST',
+        body: prepareCreateUserRequestBody(payload)
+      }),
+      transformResponse: (response: CreateUserResponse) =>
+        processCreateUserResponse(response)
+    })
+  })
+});
+```
+
+### 11.6 Example: No Payload / No Response Data
+
+```typescript
+// Query with void payload
+export const api = createApi({
+  endpoints: (builder) => ({
+    getCurrentUser: builder.query<User, void>({
+      query: () => '/users/me',
+      transformResponse: (response: GetUserResponse) =>
+        processGetUserResponse(response)
+    })
+  })
+});
+
+// Usage
+const { data: currentUser } = useGetCurrentUserQuery();
+
+// Delete returns no data
+export const processDeleteUserResponse = (): null => null;
+
+export const api = createApi({
+  endpoints: (builder) => ({
+    deleteUser: builder.mutation<null, DeleteUserPayload>({
+      query: (payload) => ({
+        url: `/users/${payload.userId}`,
+        method: 'DELETE'
+      }),
+      transformResponse: () => processDeleteUserResponse()
+    })
+  })
+});
+```
+
+### 11.7 API Rules Summary
+1. ✅ Queries/mutations accept `Payload` types and return domain models
+2. ✅ Request preparation uses `prepare[FunctionName]RequestParams` or `prepare[FunctionName]RequestBody`
+3. ✅ Response processing uses `process[FunctionName]Response`
+4. ✅ All types are explicitly defined
+5. ✅ API types (Request/Response) NEVER reference domain models
+6. ✅ Transformation delegated to dedicated functions
+7. ✅ Use `void` for no payload
+8. ✅ Use `null` for no return data
+9. ✅ RTK Query cache uses only simple types (payloads must be serializable)
+
+---
+
+## 12. Async/Await and Error Handling
+
+### 12.1 Async Functions
+- **ALWAYS prefer `async/await`** over Promise chains
+- **ALWAYS use `try/catch`** for error handling in async functions
+- **NEVER use async without error handling**
+- **Create reusable error handlers**
+
+### 12.2 Error Types
+- **Create typed error classes** for different error scenarios
+- **Use discriminated unions** for error types
+- **Provide meaningful error messages**
+
+---
+
+## 13. Security Best Practices
+
+### 13.1 Sensitive Data Storage
+- **NEVER store sensitive data in AsyncStorage**
+- **Use `expo-secure-store`** for tokens, passwords, and secrets
+- **NEVER commit API keys or secrets** to version control
+- **Use environment variables** for all configuration
+
+```typescript
+// ✅ GOOD
+import * as SecureStore from 'expo-secure-store';
+
+export const saveToken = async (token: string): Promise<void> => {
+  await SecureStore.setItemAsync('authToken', token);
+};
+
+export const getToken = async (): Promise<string | null> => {
+  return await SecureStore.getItemAsync('authToken');
+};
+
+// ❌ BAD
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+await AsyncStorage.setItem('authToken', token); // Insecure!
+```
+
+### 13.2 API Security
+- **NEVER expose API keys** in client code
+- **Use secure HTTP (HTTPS) only**
+- **Implement proper authentication headers**
+- **Handle token refresh automatically**
+
+### 13.3 Authentication
+- JWT tokens with refresh mechanism
+- Use Axios interceptors
+- Separate `api` and `authorizedApi` instances
+
+---
+
+## 14. Debugging and Logging
+
+- **Use console.log ONLY for local debugging**
+- **ALWAYS remove console.log before committing**
+- **Use Polish language** for all console messages
+
+```typescript
+// ✅ GOOD - Development only
+if (__DEV__) {
+  console.log('Użytkownik zalogowany:', user);
+}
+
+// ✅ GOOD - Production logging
+import * as Sentry from '@sentry/react-native';
+
+Sentry.captureException(error, {
+  extra: { userId, action: 'login' },
+});
+
+// ❌ BAD - Console in production
+console.log('User logged in:', user);
+```
+
+---
+
+## 15. Testing and Documentation
+
+### 15.1 Testing
+- Every component needs at least one simple render test
+- Use Jest and Enzyme (or React Testing Library)
+- Tests ensure properly used components don't cause system errors
+
+### 15.2 Documentation
+- Use JSDoc format
+- Minimum requirement: comment non-obvious code that needs explanation
+- Level of detail depends on project guidelines
+
+---
+
+## 16. Technology Stack
+
+### 16.1 Mobile Projects
+- **Framework:** React Native with Expo
+- **Router:** Expo Router (file-based routing)
+- **State:** Redux Toolkit with RTK Query
+- **Components:** React Native Paper
+- **Styling:** StyleSheet.create() with `createStyles(theme: AppTheme)` pattern
+- **Theme Type:** Custom `AppTheme` type extending MD3Theme with spacing
+- **Spacing:** theme.spacing (XS: 4px, S: 8px, M: 12px, L: 16px, XL: 20px, XXL: 24px)
+- **Typography:** React Native Paper theme.fonts (displayLarge, titleMedium, bodyLarge, etc.)
+- **Theming:** React Native Paper theme for colors, fonts, and spacing
+- **Navigation:** React Navigation (via Expo Router)
+- **Push Notifications:** React Native Firebase
+
+### 16.2 API Communication
+- **Primary:** RTK Query (with Redux)
+- **Alternative:** Axios (with interceptors for auth)
+
+---
+
+## 17. Formatting and Lists (Response Style)
+
+### 17.1 When to Use Lists
+- Keep responses natural with minimal formatting
+- Use sentences/paragraphs for casual conversation
+- **DON'T** use bullet points for reports or explanations
+- **DO** use lists only when:
+  - User explicitly requests lists/ranking
+  - Response is multifaceted and lists are essential for clarity
+- Use CommonMark markdown for lists
+- Each bullet point should be 1-2 sentences minimum
+
+### 17.2 Reports and Documents
+- Write in prose and paragraphs
+- NO bullet points in prose
+- NO numbered lists in prose
+- NO excessive bolded text
+- Use natural language for lists: "some things include: x, y, and z"
+
+---
+
+## 18. Quick Reference: Critical Don'ts
+
+❌ Never use `any` - use `unknown` instead
+❌ Never use `var` - use `const` or `let`
+❌ Never use `==` or `!=` - always use `===` or `!==`
+❌ Never name a variable `arguments`
+❌ Never use `for...in` on arrays
+❌ Never omit the default case in switch statements
+❌ Never repeat names unnecessarily
+❌ Never use emojis (unless user explicitly asks)
+❌ Never use `useCallback` and `useMemo` when React Compiler is on
+❌ Never access Redux state directly (use selectors)
+❌ Never create generic "set" actions in Redux
+❌ Never use API `response.data` directly in application
+❌ Never mix domain models with API request/response types
+❌ Never put logic in display components
+❌ Never create components for hypothetical future use
+❌ Never define types/models where they're used
+❌ Never use browser storage APIs in artifacts
+❌ Never use default exports (exception: Expo Router routes)
+❌ Never use class components
+❌ Never skip API response processing
+❌ Never use inline styles
+❌ Never pass objects directly to style prop
+❌ Never use `any` type for theme - use `AppTheme`
+❌ Never hardcode typography - use `theme.fonts`
+❌ Never hardcode spacing values - use `theme.spacing`
+❌ Never use `.map()` for long lists - use `FlatList`
+❌ Never store sensitive data in AsyncStorage
+❌ Never hardcode API keys or secrets
+❌ Never use async without try/catch
+❌ Never use Promise chains - prefer async/await
+❌ Never commit console.log statements
+
+---
+
+## 19. Quick Reference: Best Practices
+
+✅ Use `interface` over `type` for object shapes
+✅ Use `const` by default, `let` only when reassignment needed
+✅ Always use `===` and `!==` for comparisons
+✅ Use optional chaining (`?.`) for safe property access
+✅ Prefer named exports (except Expo Router routes)
+✅ Use destructuring for props and state
+✅ Prefer function declarations for named functions
+✅ Use arrow functions as callbacks
+✅ Use rest parameters instead of `arguments`
+✅ Always include braced blocks in control flow
+✅ Include default case in all switch statements
+✅ Prefer `for...of` for array iteration
+✅ Use environment variables for configuration
+✅ Use function components, not class components
+✅ Extract logic to custom hooks
+✅ Maximum separation of logic from display
+✅ Components should be maximally simple
+✅ Use selectors for ALL Redux state access
+✅ Create descriptive Redux actions
+✅ Process ALL API responses through `process[FunctionName]Response`
+✅ Use `Payload` suffix for API function parameters
+✅ Use `prepare[FunctionName]Request*` for request preparation
+✅ Use explicit typing everywhere
+✅ Keep components reusable and abstract
+✅ Document non-obvious code with `//` comments
+✅ Test component rendering
+✅ Use file name quantifiers
+✅ Follow modular architecture
+✅ Place code where it originates
+✅ Avoid deeply nested ternary operators
+✅ Separate logic into reusable helpers or hooks
+✅ Treat abbreviations as whole words
+✅ Use `StyleSheet.create()` - never inline styles
+✅ Always import and use `AppTheme` type from `@/theme`
+✅ Always cast `useTheme()` as `AppTheme`
+✅ Create `createStyles(theme: AppTheme)` function pattern
+✅ Use spread operator `...theme.fonts.bodyLarge` for fonts
+✅ Use `theme.fonts` for all typography
+✅ Use `theme.colors` for all colors
+✅ Use `theme.spacing` for all spacing values
+✅ Use `FlatList` for lists with more than 10 items
+✅ Use `Platform.OS` for platform-specific code
+✅ Prefer `Pressable` over `TouchableOpacity`
+✅ Follow Expo Router file-based routing conventions
+✅ Use `expo-secure-store` for sensitive data
+✅ Always use `async/await` with `try/catch`
+✅ Create typed error classes
+✅ Validate all user input
+✅ Remove console.log before committing
+✅ Use Polish for all console messages and user-facing errors
